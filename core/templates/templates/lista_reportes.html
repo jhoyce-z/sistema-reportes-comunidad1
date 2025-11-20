@@ -1,0 +1,87 @@
+{% extends 'core/base.html' %}
+{% block title %}Mis Reportes - {{ block.super }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">
+        <i class="fas fa-list me-2 text-primary"></i>
+        Mis Reportes
+    </h1>
+    <a href="{% url 'core:crear_reporte' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>
+        Nuevo Reporte
+    </a>
+</div>
+
+{% if reportes %}
+    <div class="row">
+        {% for reporte in reportes %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                {% if reporte.imagen %}
+                    <img src="{{ reporte.imagen.url }}" class="card-img-top" alt="{{ reporte.titulo }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="fas fa-image fa-3x text-muted"></i>
+                    </div>
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ reporte.titulo }}</h5>
+                    <p class="card-text flex-grow-1">{{ reporte.descripcion|truncatewords:20 }}</p>
+                    <div class="mb-2">
+                        <span class="badge bg-primary badge-estado">
+                            <i class="fas fa-tag me-1"></i>
+                            {{ reporte.get_categoria_display }}
+                        </span>
+                        <span class="badge 
+                            {% if reporte.estado == 'P' %}bg-warning
+                            {% elif reporte.estado == 'E' %}bg-info
+                            {% else %}bg-success{% endif %} badge-estado">
+                            <i class="fas 
+                                {% if reporte.estado == 'P' %}fa-clock
+                                {% elif reporte.estado == 'E' %}fa-tools
+                                {% else %}fa-check{% endif %} me-1">
+                            </i>
+                            {{ reporte.get_estado_display }}
+                        </span>
+                    </div>
+                    <div class="mt-auto">
+                        <p class="text-muted small mb-1">
+                            <i class="fas fa-map-marker-alt me-1"></i>
+                            {{ reporte.ubicacion|truncatewords:3 }}
+                        </p>
+                        <p class="text-muted small mb-3">
+                            <i class="fas fa-calendar me-1"></i>
+                            {{ reporte.fecha_creacion|date:"d/m/Y H:i" }}
+                        </p>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="btn-group w-100" role="group">
+                        <a href="{% url 'core:editar_reporte' reporte.pk %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit me-1"></i>
+                            Editar
+                        </a>
+                        <a href="{% url 'core:eliminar_reporte' reporte.pk %}" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-trash me-1"></i>
+                            Eliminar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="fas fa-inbox fa-4x text-muted"></i>
+        </div>
+        <h3 class="text-muted">No tienes reportes aún</h3>
+        <p class="text-muted mb-4">Comienza reportando un problema en tu comunidad</p>
+        <a href="{% url 'core:crear_reporte' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus me-2"></i>
+            Crear Primer Reporte
+        </a>
+    </div>
+{% endif %}
+{% endblock %}
